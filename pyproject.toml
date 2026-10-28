@@ -1,0 +1,31 @@
+
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iris-hesse-compensation-harvester"
+version = "0.1.0"
+description = "Reproducible WFS harvester for the Hesse compensation register"
+requires-python = ">=3.11"
+dependencies = [
+    "requests==2.32.5",
+    "geopandas==1.1.1",
+    "shapely==2.1.2",
+    "pyproj==3.7.2",
+    "SQLAlchemy==2.0.44",
+    "psycopg[binary]==3.2.10",
+    "pydantic-settings==2.11.0",
+    "pytest==8.4.2",
+    "httpx==0.28.1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

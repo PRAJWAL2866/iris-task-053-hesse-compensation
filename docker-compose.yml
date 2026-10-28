@@ -1,0 +1,39 @@
+﻿
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: iris-hesse-postgis
+    environment:
+      POSTGRES_DB: iris
+      POSTGRES_USER: iris_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iris_dev_password}
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iris_app -d iris"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  harvester:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://iris_app:${POSTGRES_PASSWORD:-iris_dev_password}@db:5432/iris
+      WFS_BASE_URL: https://gds.hessen.de/wfs/hlnug/kompensation
+      WFS_LAYER: he_kompensationskataster
+      WFS_TIMEOUT_SECONDS: "30"
+      WFS_PAGE_SIZE: "500"
+      TARGET_CRS: EPSG:25832
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - run
+
+volumes:
+  postgis_data:
